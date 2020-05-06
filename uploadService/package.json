@@ -1,0 +1,31 @@
+{
+    "name": "uploadservice",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon app"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "bytes": "^3.1.0",
+        "cloudinary": "^1.18.1",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "download": "^7.1.0",
+        "download-file": "^0.1.5",
+        "ejs": "^3.0.1",
+        "express": "^4.17.1",
+        "express-graphql": "^0.9.0",
+        "firebase-admin": "^8.9.2",
+        "graphql": "^15.0.0",
+        "graphql-upload": "^10.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "multer": "^1.4.2",
+        "node-fetch": "^2.6.0",
+        "nodemon": "^2.0.2"
+    }
+}
