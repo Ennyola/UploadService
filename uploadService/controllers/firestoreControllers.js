@@ -102,8 +102,23 @@ const getImage = (username) => {
 
 }
 
+const deleteImage = (url) => {
+    async function query() {
+        let imageToBeDeleted = await docRefFiles.where('url', '==', url).get()
+        imageToBeDeleted.forEach(doc => {
+            // console.log(doc.data().name)
+            docRefFiles.doc(doc.data().name).delete()
+        })
+
+        return (true)
+    }
+
+    return (query())
+
+}
 module.exports.sendImageToDb = sendImageToDb
 module.exports.deleteFiles = deleteFiles
 module.exports.queryFile = queryFile
 module.exports.queryFiles = queryFiles
 module.exports.getImage = getImage
+module.exports.deleteImage = deleteImage

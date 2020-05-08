@@ -5,7 +5,7 @@ var fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const byte = require('bytes')
 
-const { sendImageToDb, getImage } = require('../controllers/firestoreControllers')
+const { sendImageToDb, getImage, deleteImage } = require('../controllers/firestoreControllers')
 
 
 cloudinary.config({
@@ -13,6 +13,21 @@ cloudinary.config({
     api_key: '256698143997345',
     api_secret: 'bFDo0j2JwTGBGqMgWUFuOs5bYB8'
 });
+
+const getFileName = (url) => {
+    for (var i = 0; i <= url.length; i++) {
+        if (url[i] == '/') {
+            url = url.replace(url[i], " ")
+        }
+        if (url[i] == '.') {
+            url = url.replace(url[i], " ")
+        }
+    }
+    let urlArray = url.split(' ')
+    let urlArrayIndex = urlArray.length - 2
+    let fileName = urlArray[urlArrayIndex]
+    return fileName
+}
 
 
 const FileType = new GraphQLObjectType({
@@ -38,7 +53,7 @@ const RootQuery = new GraphQLObjectType({
         },
         getfiles: {
             type: new GraphQLList(FileType),
-            args: { username: { type: GraphQLString } },
+            args: { username: { type: new GraphQLNonNull(GraphQLString) } },
             resolve(parent, { username }) {
                 return getImage(username)
             }
@@ -72,13 +87,31 @@ const mutation = new GraphQLObjectType({
                 return deleteFiles(filename)
             }
         },
+        deleteImage: {
+            type: FileType,
+            args: {
+                url: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, { url }) {
+                const name = getFileName(url)
+                cloudinary.uploader.destroy(name, function(err, result) {
+                    console.log(err, result)
+                })
+                deleteImage(url)
+                return ({
+                    name
+                })
+
+            }
+        },
+
         uploadImage: {
             description: 'Uploads an image.',
             type: FileType,
             args: {
                 image: {
                     description: 'Image file.',
-                    type: GraphQLUpload
+                    type: new GraphQLNonNull(GraphQLUpload)
                 },
                 username: { type: new GraphQLNonNull(GraphQLString) }
             },
