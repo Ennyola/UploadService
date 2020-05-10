@@ -5,7 +5,7 @@ var fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const byte = require('bytes')
 
-const { sendImageToDb, getImage, deleteImage } = require('../controllers/firestoreControllers')
+const { sendImageToDb, getImage, deleteImage, queryFile } = require('../controllers/firestoreControllers')
 
 
 cloudinary.config({
@@ -33,8 +33,8 @@ const getFileName = (url) => {
 const FileType = new GraphQLObjectType({
     name: 'File',
     fields: () => ({
-        userId: { type: GraphQLID },
-        name: { type: GraphQLString },
+        id: { type: GraphQLString },
+        user: { type: GraphQLString },
         url: { type: GraphQLString },
         size: { type: GraphQLString }
     })
@@ -46,8 +46,8 @@ const RootQuery = new GraphQLObjectType({
         getfile: {
             type: FileType,
             args: { filename: { type: GraphQLString } },
-            resolve(parents, args) {
-                return queryFile(args)
+            resolve(parents, { filename }) {
+                return queryFile(filename)
 
             }
         },
@@ -64,29 +64,6 @@ const RootQuery = new GraphQLObjectType({
 const mutation = new GraphQLObjectType({
     name: "mutation",
     fields: {
-        addFile: {
-            type: FileType,
-            args: {
-                filename: { type: new GraphQLNonNull(GraphQLString) },
-                url: { type: new GraphQLNonNull(GraphQLString) },
-                size: { type: new GraphQLNonNull(GraphQLFloat) },
-                username: { type: new GraphQLNonNull(GraphQLString) },
-                userId: { type: new GraphQLNonNull(GraphQLID) },
-            },
-            resolve(parents, args) {
-                return sendFilesToDb(args)
-            }
-        },
-
-        deleteFile: {
-            type: FileType,
-            args: {
-                filename: { type: new GraphQLNonNull(GraphQLString) }
-            },
-            resolve(parents, { filename }) {
-                return deleteFiles(filename)
-            }
-        },
         deleteImage: {
             type: FileType,
             args: {
@@ -97,10 +74,7 @@ const mutation = new GraphQLObjectType({
                 cloudinary.uploader.destroy(name, function(err, result) {
                     console.log(err, result)
                 })
-                deleteImage(url)
-                return ({
-                    name
-                })
+                return deleteImage(url)
 
             }
         },
@@ -117,16 +91,39 @@ const mutation = new GraphQLObjectType({
             },
             async resolve(parent, { image, username }) {
                 const { filename, mimetype, createReadStream } = await image
-                let upload_stream = cloudinary.uploader.upload_stream((error, result) => {
-                    const { bytes, secure_url } = result
-                    var size = byte(bytes)
-                    return sendImageToDb(filename, size, secure_url, username)
-                })
                 const stream = createReadStream()
-                stream.pipe(upload_stream)
-                return ({
-                    name: filename
+
+                const cloudinaryWrap = () => {
+                    return new Promise((res, rej) => {
+                        const upload_stream = cloudinary.uploader.upload_stream((error, result) => {
+                            const { bytes, secure_url } = result
+                            var size = byte(bytes)
+                            sendImageToDb(filename, size, secure_url, username)
+                            res({
+                                size,
+                                url: secure_url
+                            })
+                        })
+                        stream.pipe(upload_stream)
+                    })
+                }
+                return value = cloudinaryWrap().then((data) => {
+                    let { size, url } = data
+                    return ({
+                        size,
+                        url,
+                        id: filename
+                    })
+
                 })
+
+
+
+
+
+
+
+
 
             }
         }

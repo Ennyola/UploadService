@@ -12,75 +12,48 @@ var docRefFiles = db.collection('Files')
 const sendImageToDb = (filename, size, secure_url, username) => {
     // let docRefUsers = db.collection('Users').doc(username)
     let sendFile = docRefFiles.doc(filename).set({
-        name: filename,
+        id: filename,
         url: secure_url,
         size,
-        userId: username
+        user: username
     }).then(() => {
         console.log('files saved to  firestore');
     }).catch((err) => {
         console.log(err);
     })
 
-    // let sendUser = docRefUsers.set({
-    //     id: userId,
-    //     username
-    // }).then(() => {
-    //     console.log(`${username} saved to firestore`);
-    // }).catch((err) => {
-    //     console.log(err);
-    // })
-
     return ({
-        name: filename,
+        id: filename,
         size,
         url: secure_url,
-        userId: username
+        user: username
     })
 
 }
 
-const deleteFiles = (filename) => {
-    let docRefFiles = db.collection('Files').doc(filename).delete()
-    return ({
-        name: filename
-    })
+
+const getDocDetail = (filename) => {
+    docRefFiles.doc(filename).get()
 }
-const queryFile = ({ filename }) => {
+
+const queryFile = (filename) => {
     async function query() {
-
-        let docRefFiles = db.collection('Files').doc(filename)
-        let result = await docRefFiles.get()
+        let result = await docRefFiles.doc(filename).get()
         return ({
-            name: result.data().name,
+            id: result.data().id,
             url: result.data().url,
             size: result.data().size
         })
     };
+    console.log('i am seeing')
+    console.log(filename)
 
     return (query())
 
-
-
 }
-const queryFiles = () => {
-    let name = []
-    let docRefFiles = db.collection('Files')
-    let allFiles = docRefFiles.get()
-        .then(snapsho => {
-            snapsho.forEach(dc => {
-                name.push(dc.id)
-                console.log(name)
-            });
-            return (name)
-        })
-
-    return (allFiles)
-}
-
 const getImage = (username) => {
     let imageArray = []
-    let query = docRefFiles.where('userId', '==', username).get()
+    let query = docRefFiles.where('user', '==', username).get()
         .then(snapshot => {
             if (snapshot.empty) {
                 console.log('No matching documents.');
@@ -88,7 +61,6 @@ const getImage = (username) => {
             }
 
             snapshot.forEach(doc => {
-                console.log(doc.id, '=>', doc.data());
                 imageArray.push(doc.data())
             });
 
@@ -103,22 +75,28 @@ const getImage = (username) => {
 }
 
 const deleteImage = (url) => {
+    let id, size
     async function query() {
         let imageToBeDeleted = await docRefFiles.where('url', '==', url).get()
         imageToBeDeleted.forEach(doc => {
             // console.log(doc.data().name)
-            docRefFiles.doc(doc.data().name).delete()
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefFiles.doc(doc.data().id).delete()
         })
 
-        return (true)
+        return ({
+            id,
+            url,
+            size
+        })
     }
 
     return (query())
 
 }
 module.exports.sendImageToDb = sendImageToDb
-module.exports.deleteFiles = deleteFiles
 module.exports.queryFile = queryFile
-module.exports.queryFiles = queryFiles
 module.exports.getImage = getImage
 module.exports.deleteImage = deleteImage
