@@ -6,12 +6,27 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-var docRefFiles = db.collection('Files')
+var docRefFiles = db.collection('Files'),
+    docRefImages = db.collection('Images'),
+    docRefMusic = db.collection('Music'),
+    docRefVideos = db.collection('Videos'),
+    docRefDocuments = db.collection('Documents')
+
 
 
 const sendImageToDb = (filename, size, secure_url, username) => {
     // let docRefUsers = db.collection('Users').doc(username)
-    let sendFile = docRefFiles.doc(filename).set({
+    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+    let sendFiletoImagesDoc = docRefImages.doc(filename).set({
         id: filename,
         url: secure_url,
         size,
@@ -31,6 +46,102 @@ const sendImageToDb = (filename, size, secure_url, username) => {
 
 }
 
+
+const sendVideoToDb = (filename, size, secure_url, username) => {
+    // let docRefUsers = db.collection('Users').doc(username)
+    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+    let sendFiletoVideosDoc = docRefVideos.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+
+    return ({
+        id: filename,
+        size,
+        url: secure_url,
+        user: username
+    })
+
+}
+
+const sendMusicToDb = (filename, size, secure_url, username) => {
+    // let docRefUsers = db.collection('Users').doc(username)
+    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+    let sendFiletoMusicDoc = docRefMusic.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+
+    return ({
+        id: filename,
+        size,
+        url: secure_url,
+        user: username
+    })
+
+}
+
+const sendrawFilesToDb = (filename, size, secure_url, username) => {
+    // let docRefUsers = db.collection('Users').doc(username)
+    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+    let sendrawFileToFilesDoc = docRefDocuments.doc(filename).set({
+        id: filename,
+        url: secure_url,
+        size,
+        user: username
+    }).then(() => {
+        console.log('files saved to  firestore');
+    }).catch((err) => {
+        console.log(err);
+    })
+
+    return ({
+        id: filename,
+        size,
+        url: secure_url,
+        user: username
+    })
+
+}
 
 const getDocDetail = (filename) => {
     docRefFiles.doc(filename).get()
@@ -100,3 +211,6 @@ module.exports.sendImageToDb = sendImageToDb
 module.exports.queryFile = queryFile
 module.exports.getImage = getImage
 module.exports.deleteImage = deleteImage
+module.exports.sendVideoToDb = sendVideoToDb
+module.exports.sendMusicToDb = sendMusicToDb
+module.exports.sendrawFilesToDb = sendrawFilesToDb
