@@ -185,6 +185,29 @@ const getImage = (username) => {
 
 }
 
+const getVideos = (username) => {
+    let videoArray = []
+    let query = docRefVideos.where('user', '==', username).get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                console.log('No matching documents.');
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                videoArray.push(doc.data())
+            });
+
+            return (videoArray)
+
+        })
+        .catch(err => {
+            console.log('Error getting documents', err);
+        });
+    return (query)
+
+}
+
 const deleteImage = (url) => {
     let id, size
     async function query() {
@@ -207,10 +230,46 @@ const deleteImage = (url) => {
     return (query())
 
 }
+const deleteVideo = (url) => {
+    let id, size
+    async function query() {
+        let videoToBeDeletedFromFiles = await docRefFiles.where('url', '==', url).get()
+        videoToBeDeletedFromFiles.forEach(doc => {
+            // console.log(doc.data().name)
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefFiles.doc(doc.data().id).delete()
+        })
+
+        let videoToBeDeletedFromVideoCol = await docRefVideos.where('url', '==', url).get()
+        videoToBeDeletedFromVideoCol.forEach(doc => {
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefVideos.doc(doc.data().id).delete()
+        })
+
+
+
+
+        return ({
+            id,
+            url,
+            size
+        })
+    }
+
+    return (query())
+
+}
+
+//https://res.cloudinary.com/enny/video/upload/v1589243159/gqbmyebbl0rvghnuihd4.mp4
 module.exports.sendImageToDb = sendImageToDb
-module.exports.queryFile = queryFile
+module.exports.getVideos = getVideos
 module.exports.getImage = getImage
 module.exports.deleteImage = deleteImage
 module.exports.sendVideoToDb = sendVideoToDb
 module.exports.sendMusicToDb = sendMusicToDb
 module.exports.sendrawFilesToDb = sendrawFilesToDb
+module.exports.deleteVideo = deleteVideo

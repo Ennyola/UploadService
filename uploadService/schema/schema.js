@@ -5,7 +5,7 @@ var fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const byte = require('bytes')
 
-const { sendImageToDb, getImage, deleteImage, queryFile, sendVideoToDb, sendrawFilesToDb, sendMusicToDb } = require('../controllers/firestoreControllers')
+const { sendImageToDb, getImage, deleteImage, getVideos, sendVideoToDb, deleteVideo, sendrawFilesToDb, sendMusicToDb } = require('../controllers/firestoreControllers')
 
 
 cloudinary.config({
@@ -50,13 +50,13 @@ const FileType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
     name: "RootQueryType",
     fields: {
-        getfile: {
-            type: FileType,
-            args: { filename: { type: GraphQLString } },
-            resolve(parents, { filename }) {
-                return queryFile(filename)
-
+        queryVideos: {
+            type: new GraphQLList(FileType),
+            args: { username: { type: new GraphQLNonNull(GraphQLString) } },
+            resolve(parent, { username }) {
+                return getVideos(username)
             }
+
         },
         getfiles: {
             type: new GraphQLList(FileType),
@@ -85,6 +85,21 @@ const mutation = new GraphQLObjectType({
 
             }
         },
+        deleteVideo: {
+            type: FileType,
+            args: {
+                url: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parents, { url }) {
+                const name = getFileName(url)
+                cloudinary.uploader.destroy(name, function(err, result) {
+                    console.log(err, result)
+                })
+                return deleteVideo(url)
+
+            }
+        },
+
 
         uploadFile: {
             description: 'Uploads a File.',
@@ -209,48 +224,6 @@ const mutation = new GraphQLObjectType({
 
 
             }
-        },
-        uploadVideo: {
-            description: 'Uploads a Video',
-            type: FileType,
-            args: {
-                video: { type: new GraphQLNonNull(GraphQLUpload) },
-                username: { type: new GraphQLNonNull(GraphQLString) }
-
-            },
-            async resolve(parents, { video, username }) {
-
-                const { filename, mimetype, createReadStream } = await video
-                console.log(mimetype)
-                const stream = createReadStream()
-
-                const cloudinaryWrap = () => {
-                    return new Promise((res, rej) => {
-                        const upload_stream = cloudinary.uploader.upload_stream({ resource_type: "video" }, (error, result) => {
-                            console.log(result, error)
-                            const { bytes, secure_url } = result
-                            var size = byte(bytes)
-                            sendVideoToDb(filename, size, secure_url, username)
-                            res({
-                                size,
-                                url: secure_url
-                            })
-                        })
-                        stream.pipe(upload_stream)
-                    })
-                }
-                return value = cloudinaryWrap().then((data) => {
-                    let { size, url } = data
-                    return ({
-                        size,
-                        url,
-                        id: filename
-                    })
-
-                })
-
-            }
-
         }
     }
 
