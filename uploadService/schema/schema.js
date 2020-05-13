@@ -5,7 +5,20 @@ var fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const byte = require('bytes')
 
-const { sendImageToDb, getImage, deleteImage, getVideos, sendVideoToDb, deleteVideo, sendrawFilesToDb, sendMusicToDb } = require('../controllers/firestoreControllers')
+const {
+    sendImageToDb,
+    getImage,
+    deleteImage,
+    getVideos,
+    sendVideoToDb,
+    deleteVideo,
+    deleteAudio,
+    getAudios,
+    sendrawFilesToDb,
+    sendMusicToDb,
+    deleteRawFiles,
+    getRawFiles
+} = require('../controllers/firestoreControllers')
 
 
 cloudinary.config({
@@ -34,8 +47,8 @@ const imageFormats = ['ai', 'gif', 'webp', 'bmp', 'djvu', 'ps', 'ept', 'eps', 'e
     'heif', 'heic', 'ico', 'indd', 'jpg', 'jpe', 'jpeg', 'jp2', 'wdp', 'jxr', 'hdp',
     'pdf', 'png', 'psd', 'arw', 'cr2', 'svg', 'tga', 'tif,', 'tiff'
 ]
-const videoFormats = ['	3g2', '3gp', 'avi', '	flv', 'm3u8', 'ts', 'm2ts', 'mts', 'mov', 'mkv', 'mp4', 'mpeg', 'mpd', 'mxf', 'ogv', 'webm', 'wmv']
-const musicFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav', '']
+const videoFormats = ['	3g2', '3gp', 'avi', '	flv', 'm3u8', 'ts', 'm2ts', 'mts', 'mov', 'mkv', 'mp4', 'mpd', 'mxf', 'ogv', 'webm', 'wmv']
+const musicFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav', 'mpeg']
 
 const FileType = new GraphQLObjectType({
     name: 'File',
@@ -64,6 +77,21 @@ const RootQuery = new GraphQLObjectType({
             resolve(parent, { username }) {
                 return getImage(username)
             }
+        },
+        queryMusic: {
+            type: new GraphQLList(FileType),
+            args: { username: { type: new GraphQLNonNull(GraphQLString) } },
+            resolve(parent, { username }) {
+                return getAudios(username)
+            }
+        },
+        getRawFiles: {
+            type: new GraphQLList(FileType),
+            args: { username: { type: new GraphQLNonNull(GraphQLString) } },
+            resolve(parent, { username }) {
+                return getRawFiles(username)
+            }
+
         }
     }
 })
@@ -92,15 +120,43 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parents, { url }) {
                 const name = getFileName(url)
-                cloudinary.uploader.destroy(name, function(err, result) {
+                console.log(name)
+                cloudinary.uploader.destroy(name, { resource_type: "video" }, function(err, result) {
                     console.log(err, result)
                 })
                 return deleteVideo(url)
-
             }
         },
+        deleteAudio: {
+            type: FileType,
+            args: {
+                url: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parents, { url }) {
+                const name = getFileName(url)
+                console.log(name)
+                cloudinary.uploader.destroy(name, { resource_type: "video" }, function(err, result) {
+                    console.log(err, result)
+                })
+                return deleteAudio(url)
+            }
 
+        },
+        deleteRawFiles: {
+            type: FileType,
+            args: {
+                url: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parents, { url }) {
+                const name = url.split('/').pop()
+                cloudinary.uploader.destroy(name, { resource_type: "raw" }, function(err, result) {
+                    console.log(err, result)
+                })
 
+                return deleteRawFiles(url)
+            }
+
+        },
         uploadFile: {
             description: 'Uploads a File.',
             type: FileType,

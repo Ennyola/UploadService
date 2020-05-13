@@ -16,16 +16,16 @@ var docRefFiles = db.collection('Files'),
 
 const sendImageToDb = (filename, size, secure_url, username) => {
     // let docRefUsers = db.collection('Users').doc(username)
-    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
-        id: filename,
-        url: secure_url,
-        size,
-        user: username
-    }).then(() => {
-        console.log('files saved to  firestore');
-    }).catch((err) => {
-        console.log(err);
-    })
+    // let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+    //     id: filename,
+    //     url: secure_url,
+    //     size,
+    //     user: username
+    // }).then(() => {
+    //     console.log('files saved to  firestore');
+    // }).catch((err) => {
+    //     console.log(err);
+    // })
     let sendFiletoImagesDoc = docRefImages.doc(filename).set({
         id: filename,
         url: secure_url,
@@ -49,16 +49,16 @@ const sendImageToDb = (filename, size, secure_url, username) => {
 
 const sendVideoToDb = (filename, size, secure_url, username) => {
     // let docRefUsers = db.collection('Users').doc(username)
-    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
-        id: filename,
-        url: secure_url,
-        size,
-        user: username
-    }).then(() => {
-        console.log('files saved to  firestore');
-    }).catch((err) => {
-        console.log(err);
-    })
+    // let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+    //     id: filename,
+    //     url: secure_url,
+    //     size,
+    //     user: username
+    // }).then(() => {
+    //     console.log('files saved to  firestore');
+    // }).catch((err) => {
+    //     console.log(err);
+    // })
     let sendFiletoVideosDoc = docRefVideos.doc(filename).set({
         id: filename,
         url: secure_url,
@@ -81,16 +81,16 @@ const sendVideoToDb = (filename, size, secure_url, username) => {
 
 const sendMusicToDb = (filename, size, secure_url, username) => {
     // let docRefUsers = db.collection('Users').doc(username)
-    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
-        id: filename,
-        url: secure_url,
-        size,
-        user: username
-    }).then(() => {
-        console.log('files saved to  firestore');
-    }).catch((err) => {
-        console.log(err);
-    })
+    // let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+    //     id: filename,
+    //     url: secure_url,
+    //     size,
+    //     user: username
+    // }).then(() => {
+    //     console.log('files saved to  firestore');
+    // }).catch((err) => {
+    //     console.log(err);
+    // })
     let sendFiletoMusicDoc = docRefMusic.doc(filename).set({
         id: filename,
         url: secure_url,
@@ -113,16 +113,16 @@ const sendMusicToDb = (filename, size, secure_url, username) => {
 
 const sendrawFilesToDb = (filename, size, secure_url, username) => {
     // let docRefUsers = db.collection('Users').doc(username)
-    let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
-        id: filename,
-        url: secure_url,
-        size,
-        user: username
-    }).then(() => {
-        console.log('files saved to  firestore');
-    }).catch((err) => {
-        console.log(err);
-    })
+    // let sendFiletoFilesDoc = docRefFiles.doc(filename).set({
+    //     id: filename,
+    //     url: secure_url,
+    //     size,
+    //     user: username
+    // }).then(() => {
+    //     console.log('files saved to  firestore');
+    // }).catch((err) => {
+    //     console.log(err);
+    // })
     let sendrawFileToFilesDoc = docRefDocuments.doc(filename).set({
         id: filename,
         url: secure_url,
@@ -156,15 +156,13 @@ const queryFile = (filename) => {
             size: result.data().size
         })
     };
-    console.log('i am seeing')
-    console.log(filename)
 
     return (query())
 
 }
 const getImage = (username) => {
     let imageArray = []
-    let query = docRefFiles.where('user', '==', username).get()
+    let query = docRefImages.where('user', '==', username).get()
         .then(snapshot => {
             if (snapshot.empty) {
                 console.log('No matching documents.');
@@ -174,7 +172,6 @@ const getImage = (username) => {
             snapshot.forEach(doc => {
                 imageArray.push(doc.data())
             });
-
             return (imageArray)
 
         })
@@ -207,18 +204,70 @@ const getVideos = (username) => {
     return (query)
 
 }
+const getAudios = (username) => {
+    let audioArray = []
+    let query = docRefMusic.where('user', '==', username).get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                console.log('No matching documents.');
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                audioArray.push(doc.data())
+            });
+
+            return (audioArray)
+
+        })
+        .catch(err => {
+            console.log('Error getting documents', err);
+        });
+    return (query)
+}
+const getRawFiles = (username) => {
+    let rawFilesArray = []
+    let query = docRefDocuments.where('user', '==', username).get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                console.log('No matching documents.');
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                rawFilesArray.push(doc.data())
+            });
+
+            return (rawFilesArray)
+
+        })
+        .catch(err => {
+            console.log('Error getting documents', err);
+        });
+    return (query)
+
+}
 
 const deleteImage = (url) => {
     let id, size
     async function query() {
-        let imageToBeDeleted = await docRefFiles.where('url', '==', url).get()
-        imageToBeDeleted.forEach(doc => {
-            // console.log(doc.data().name)
+        let imageToBeDeletedFromFiles = await docRefFiles.where('url', '==', url).get()
+        imageToBeDeletedFromFiles.forEach(doc => {
+
             id = doc.data().id
             url = doc.data().url
             size = doc.data().size
             docRefFiles.doc(doc.data().id).delete()
         })
+        let imageToBeDeletedFromImages = await docRefImages.where('url', '==', url).get()
+        imageToBeDeletedFromImages.forEach(doc => {
+
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefImages.doc(doc.data().id).delete()
+        })
+
 
         return ({
             id,
@@ -235,7 +284,7 @@ const deleteVideo = (url) => {
     async function query() {
         let videoToBeDeletedFromFiles = await docRefFiles.where('url', '==', url).get()
         videoToBeDeletedFromFiles.forEach(doc => {
-            // console.log(doc.data().name)
+
             id = doc.data().id
             url = doc.data().url
             size = doc.data().size
@@ -263,13 +312,74 @@ const deleteVideo = (url) => {
     return (query())
 
 }
+const deleteAudio = (url) => {
+    let id, size
+    async function query() {
+        let audioToBeDeletedFromFiles = await docRefFiles.where('url', '==', url).get()
+        audioToBeDeletedFromFiles.forEach(doc => {
+
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefFiles.doc(doc.data().id).delete()
+        })
+
+        let audioToBeDeletedFromAudioCol = await docRefMusic.where('url', '==', url).get()
+        audioToBeDeletedFromAudioCol.forEach(doc => {
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefMusic.doc(doc.data().id).delete()
+        })
+        return ({
+            id,
+            url,
+            size
+        })
+    }
+
+    return (query())
+}
+const deleteRawFiles = (url) => {
+    let id, size
+    async function query() {
+        let rawFilesToBeDeletedFromFilesCol = await docRefFiles.where('url', '==', url).get()
+        rawFilesToBeDeletedFromFilesCol.forEach(doc => {
+
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefFiles.doc(doc.data().id).delete()
+        })
+
+        let rawFilesToBeDeletedFromDocumentsCol = await docRefDocuments.where('url', '==', url).get()
+        rawFilesToBeDeletedFromDocumentsCol.forEach(doc => {
+            id = doc.data().id
+            url = doc.data().url
+            size = doc.data().size
+            docRefDocuments.doc(doc.data().id).delete()
+        })
+        return ({
+            id,
+            url,
+            size
+        })
+    }
+
+    return (query())
+
+}
 
 //https://res.cloudinary.com/enny/video/upload/v1589243159/gqbmyebbl0rvghnuihd4.mp4
 module.exports.sendImageToDb = sendImageToDb
 module.exports.getVideos = getVideos
 module.exports.getImage = getImage
+module.exports.getAudios = getAudios
+module.exports.getRawFiles = getRawFiles
 module.exports.deleteImage = deleteImage
 module.exports.sendVideoToDb = sendVideoToDb
 module.exports.sendMusicToDb = sendMusicToDb
 module.exports.sendrawFilesToDb = sendrawFilesToDb
 module.exports.deleteVideo = deleteVideo
+module.exports.deleteAudio = deleteAudio
+module.exports.deleteRawFiles = deleteRawFiles
