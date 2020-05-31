@@ -22,25 +22,14 @@ const {
 
 
 cloudinary.config({
-    cloud_name: 'enny',
+    cloud_name: 'awploder',
     api_key: '256698143997345',
     api_secret: 'bFDo0j2JwTGBGqMgWUFuOs5bYB8'
 });
 
 //to get the actual filename from the url returned in cloudinary
 const getFileName = (url) => {
-    for (var i = 0; i <= url.length; i++) {
-        if (url[i] == '/') {
-            url = url.replace(url[i], " ")
-        }
-        if (url[i] == '.') {
-            url = url.replace(url[i], " ")
-        }
-    }
-    let urlArray = url.split(' ')
-    let urlArrayIndex = urlArray.length - 2
-    let fileName = urlArray[urlArrayIndex]
-    return fileName
+    return name = url.split('/').pop().split('.').shift()
 }
 
 const imageFormats = ['ai', 'gif', 'webp', 'bmp', 'djvu', 'ps', 'ept', 'eps', 'eps3', 'fbx', 'flif', 'gif', 'gltf',

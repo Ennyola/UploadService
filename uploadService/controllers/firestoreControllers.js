@@ -370,7 +370,6 @@ const deleteRawFiles = (url) => {
 
 }
 
-//https://res.cloudinary.com/enny/video/upload/v1589243159/gqbmyebbl0rvghnuihd4.mp4
 module.exports.sendImageToDb = sendImageToDb
 module.exports.getVideos = getVideos
 module.exports.getImage = getImage
