@@ -1,6 +1,17 @@
 const admin = require('firebase-admin');
 
-const serviceAccount = require('../uploadservice-4e08a-firebase-adminsdk-ss19v-9d875a9e6d.json')
+const serviceAccount = {
+    "type": process.env.TYPE,
+    "project_id": process.env.PROJECT_ID,
+    "private_key_id": process.env.PRIVATE_KEY_ID,
+    "private_key": process.env.PRIVATE_KEY,
+    "client_email": process.env.CLIENT_EMAIL,
+    "client_id": process.env.CLIENT_ID,
+    "auth_uri": process.env.AUTH_URL,
+    "token_uri": process.env.TOKEN_URL,
+    "auth_provider_x509_cert_url": process.env.AUTH_PROVIDER,
+    "client_x509_cert_url": process.env.CLIENT_URL
+}
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -24,7 +35,7 @@ const sendImageToDb = (filename, size, secure_url, username) => {
     // }).then(() => {
     //     console.log('files saved to  firestore');
     // }).catch((err) => {
-    //     console.log(err);
+    //     
     // })
     let sendFiletoImagesDoc = docRefImages.doc(filename).set({
         id: filename,
@@ -34,7 +45,7 @@ const sendImageToDb = (filename, size, secure_url, username) => {
     }).then(() => {
         console.log('files saved to  firestore');
     }).catch((err) => {
-        console.log(err);
+
     })
 
     return ({
@@ -57,7 +68,7 @@ const sendVideoToDb = (filename, size, secure_url, username) => {
     // }).then(() => {
     //     console.log('files saved to  firestore');
     // }).catch((err) => {
-    //     console.log(err);
+    //     
     // })
     let sendFiletoVideosDoc = docRefVideos.doc(filename).set({
         id: filename,
@@ -67,7 +78,7 @@ const sendVideoToDb = (filename, size, secure_url, username) => {
     }).then(() => {
         console.log('files saved to  firestore');
     }).catch((err) => {
-        console.log(err);
+
     })
 
     return ({
@@ -89,7 +100,7 @@ const sendMusicToDb = (filename, size, secure_url, username) => {
     // }).then(() => {
     //     console.log('files saved to  firestore');
     // }).catch((err) => {
-    //     console.log(err);
+    //     
     // })
     let sendFiletoMusicDoc = docRefMusic.doc(filename).set({
         id: filename,
@@ -99,7 +110,7 @@ const sendMusicToDb = (filename, size, secure_url, username) => {
     }).then(() => {
         console.log('files saved to  firestore');
     }).catch((err) => {
-        console.log(err);
+
     })
 
     return ({
@@ -121,7 +132,7 @@ const sendrawFilesToDb = (filename, size, secure_url, username) => {
     // }).then(() => {
     //     console.log('files saved to  firestore');
     // }).catch((err) => {
-    //     console.log(err);
+    //     
     // })
     let sendrawFileToFilesDoc = docRefDocuments.doc(filename).set({
         id: filename,
@@ -131,7 +142,7 @@ const sendrawFilesToDb = (filename, size, secure_url, username) => {
     }).then(() => {
         console.log('files saved to  firestore');
     }).catch((err) => {
-        console.log(err);
+
     })
 
     return ({

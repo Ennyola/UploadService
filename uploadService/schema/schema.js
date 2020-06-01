@@ -1,9 +1,10 @@
 const graphql = require('graphql')
 const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLFloat, GraphQLSchema, GraphQLBoolean, GraphQLNonNull, GraphQLList } = graphql
 const { GraphQLUpload } = require('graphql-upload')
-var fs = require('fs');
 const cloudinary = require('cloudinary').v2;
+var fs = require('fs');
 const byte = require('bytes')
+
 
 const {
     sendImageToDb,
@@ -21,11 +22,9 @@ const {
 } = require('../controllers/firestoreControllers')
 
 
-cloudinary.config({
-    cloud_name: 'awploder',
-    api_key: '256698143997345',
-    api_secret: 'bFDo0j2JwTGBGqMgWUFuOs5bYB8'
-});
+
+
+
 
 //to get the actual filename from the url returned in cloudinary
 const getFileName = (url) => {
@@ -95,9 +94,7 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parent, { url }) {
                 const name = getFileName(url)
-                cloudinary.uploader.destroy(name, function(err, result) {
-                    console.log(err, result)
-                })
+                cloudinary.uploader.destroy(name, function(err, result) {})
                 return deleteImage(url)
 
             }
@@ -109,10 +106,7 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parents, { url }) {
                 const name = getFileName(url)
-                console.log(name)
-                cloudinary.uploader.destroy(name, { resource_type: "video" }, function(err, result) {
-                    console.log(err, result)
-                })
+                cloudinary.uploader.destroy(name, { resource_type: "video" }, function(err, result) {})
                 return deleteVideo(url)
             }
         },
@@ -123,10 +117,7 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parents, { url }) {
                 const name = getFileName(url)
-                console.log(name)
-                cloudinary.uploader.destroy(name, { resource_type: "video" }, function(err, result) {
-                    console.log(err, result)
-                })
+                cloudinary.uploader.destroy(name, { resource_type: "video" }, function(err, result) {})
                 return deleteAudio(url)
             }
 
@@ -138,9 +129,7 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parents, { url }) {
                 const name = url.split('/').pop()
-                cloudinary.uploader.destroy(name, { resource_type: "raw" }, function(err, result) {
-                    console.log(err, result)
-                })
+                cloudinary.uploader.destroy(name, { resource_type: "raw" }, function(err, result) {})
 
                 return deleteRawFiles(url)
             }
@@ -160,7 +149,6 @@ const mutation = new GraphQLObjectType({
                 const { filename, mimetype, createReadStream } = await file
                 const stream = createReadStream()
                 fileFormat = mimetype.split('/').pop().toLowerCase()
-                console.log(fileFormat)
 
                 if (imageFormats.includes(fileFormat)) {
                     const cloudinaryWrap = () => {
@@ -190,7 +178,6 @@ const mutation = new GraphQLObjectType({
                     const cloudinaryWrap = () => {
                         return new Promise((res, rej) => {
                             const upload_stream = cloudinary.uploader.upload_stream({ resource_type: "video" }, (error, result) => {
-                                console.log(result, error)
                                 const { bytes, secure_url } = result
                                 var size = byte(bytes)
                                 sendVideoToDb(filename, size, secure_url, username)
@@ -216,7 +203,6 @@ const mutation = new GraphQLObjectType({
                     const cloudinaryWrap = () => {
                         return new Promise((res, rej) => {
                             const upload_stream = cloudinary.uploader.upload_stream({ resource_type: "video" }, (error, result) => {
-                                console.log(result, error)
                                 const { bytes, secure_url } = result
                                 var size = byte(bytes)
                                 sendMusicToDb(filename, size, secure_url, username)
@@ -241,7 +227,6 @@ const mutation = new GraphQLObjectType({
                     const cloudinaryWrap = () => {
                         return new Promise((res, rej) => {
                             const upload_stream = cloudinary.uploader.upload_stream({ resource_type: "raw" }, (error, result) => {
-                                console.log(result, error)
                                 const { bytes, secure_url } = result
                                 var size = byte(bytes)
                                 sendrawFilesToDb(filename, size, secure_url, username)
