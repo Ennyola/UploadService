@@ -8,11 +8,22 @@ const schema = require('./schema/schema')
 
 
 const app = express()
-app.use(cors())
 const port = process.env.PORT || 4000;
+
+var whitelist = ['https://awploder.herokuapp.com']
+var corsOptions = {
+    origin: function(origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
 
 
 app.use('/graphiql',
+    cors(corsOptions),
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
     expressGraphQl({
         graphiql: false,
