@@ -15,7 +15,7 @@ const port = process.env.PORT || 4000;
 app.use('/graphiql',
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
     expressGraphQl({
-        graphiql: true,
+        graphiql: false,
         schema,
     }))
 
