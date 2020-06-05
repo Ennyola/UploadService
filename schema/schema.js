@@ -32,8 +32,7 @@ const getFileName = (url) => {
 }
 
 const imageFormats = ['ai', 'gif', 'webp', 'bmp', 'djvu', 'ps', 'ept', 'eps', 'eps3', 'fbx', 'flif', 'gif', 'gltf',
-    'heif', 'heic', 'ico', 'indd', 'jpg', 'jpe', 'jpeg', 'jp2', 'wdp', 'jxr', 'hdp',
-    'pdf', 'png', 'psd', 'arw', 'cr2', 'svg', 'tga', 'tif,', 'tiff'
+    'heif', 'heic', 'ico', 'indd', 'jpg', 'jpe', 'jpeg', 'jp2', 'wdp', 'jxr', 'hdp', 'png', 'psd', 'arw', 'cr2', 'svg', 'tga', 'tif,', 'tiff'
 ]
 const videoFormats = ['	3g2', '3gp', 'avi', '	flv', 'm3u8', 'ts', 'm2ts', 'mts', 'mov', 'mkv', 'mp4', 'mpd', 'mxf', 'ogv', 'webm', 'wmv']
 const musicFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav', 'mpeg']
