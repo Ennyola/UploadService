@@ -21,6 +21,7 @@
         "firebase-admin": "^8.9.2",
         "graphql": "^15.0.0",
         "graphql-upload": "^10.0.0",
+        "helmet": "^6.0.1",
         "nodemon": "^2.0.2"
     },
     "engines": {

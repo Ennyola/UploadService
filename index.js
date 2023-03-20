@@ -2,6 +2,7 @@ const express = require('express')
 const expressGraphQl = require('express-graphql')
 const { graphqlUploadExpress } = require('graphql-upload')
 const cloudinary = require('cloudinary').v2;
+const helmet = require('helmet');
 const cors = require('cors')
 require('dotenv').config()
 const schema = require('./schema/schema')
@@ -9,6 +10,13 @@ const schema = require('./schema/schema')
 
 const app = express()
 const port = process.env.PORT || 4000;
+
+// Set Content Security Policy
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        fontSrc: ["https://awploder-uploadservice.herokuapp.com"]
+    }
+}));
 
 var whitelist = ['https://awploder.netlify.app']
 var corsOptions = {
