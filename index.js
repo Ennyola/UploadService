@@ -11,12 +11,6 @@ const schema = require('./schema/schema')
 const app = express()
 const port = process.env.PORT || 4000;
 
-// Set Content Security Policy
-app.use(helmet.contentSecurityPolicy({
-    directives: {
-        fontSrc: ["https://awploder-uploadservice.herokuapp.com"]
-    }
-}));
 
 var whitelist = ['https://awploder.netlify.app']
 var corsOptions = {
@@ -26,7 +20,8 @@ var corsOptions = {
         } else {
             callback(new Error('Not allowed by CORS'))
         }
-    }
+    },
+    fontSrc: "'self' https://fonts.googleapis.com"
 }
 
 
