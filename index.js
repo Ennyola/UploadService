@@ -12,7 +12,7 @@ const app = express()
 const port = process.env.PORT || 4000;
 
 
-var whitelist = ['https://awploder.netlify.app']
+var whitelist = ['https://awploder.herokuapp.com']
 var corsOptions = {
     origin: function(origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
